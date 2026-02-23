@@ -1,0 +1,40 @@
+{
+  "projects": {
+    "/home/user/project-a": {
+      "lastSessionId": "sess-001",
+      "lastCost": 0.123456,
+      "lastTotalInputTokens": 10000,
+      "lastTotalOutputTokens": 5000,
+      "lastTotalCacheCreationInputTokens": 2000,
+      "lastTotalCacheReadInputTokens": 3000,
+      "lastTotalWebSearchRequests": 1,
+      "lastDuration": 60000,
+      "lastAPIDuration": 45000,
+      "lastLinesAdded": 100,
+      "lastLinesRemoved": 20,
+      "lastModelUsage": {
+        "claude-opus-4": {
+          "inputTokens": 8000,
+          "outputTokens": 4000,
+          "cacheReadInputTokens": 3000,
+          "cacheCreationInputTokens": 2000,
+          "webSearchRequests": 1,
+          "costUSD": 0.1
+        },
+        "claude-haiku-3.5": {
+          "inputTokens": 2000,
+          "outputTokens": 1000,
+          "cacheReadInputTokens": 0,
+          "cacheCreationInputTokens": 0,
+          "webSearchRequests": 0,
+          "costUSD": 0.023456
+        }
+      }
+    },
+    "/home/user/project-b-no-session": {
+      "lastCost": 0.05,
+      "lastTotalInputTokens": 500,
+      "lastTotalOutputTokens": 200
+    }
+  }
+}
