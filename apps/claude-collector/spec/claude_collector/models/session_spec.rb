@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 RSpec.describe ClaudeCollector::Models::Session do
-  describe "associations" do
-    it "has many model_usages with dependent destroy" do
-      session = described_class.create!(session_id: "sess-assoc", project_path: "/tmp")
-      session.model_usages.create!(model_id: "claude-opus-4")
+  describe 'associations' do
+    it 'has many model_usages with dependent destroy' do
+      session = described_class.create!(session_id: 'sess-assoc', project_path: '/tmp')
+      session.model_usages.create!(model_id: 'claude-opus-4')
 
       expect(session.model_usages.count).to eq(1)
 

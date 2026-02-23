@@ -1,22 +1,19 @@
 # frozen_string_literal: true
 
-require "active_record"
+require 'active_record'
 
-require_relative "claude_collector/models/session"
-require_relative "claude_collector/models/model_usage"
-require_relative "claude_collector/parser"
-require_relative "claude_collector/repository"
-require_relative "claude_collector/watcher"
+require_relative 'claude_collector/models/session'
+require_relative 'claude_collector/models/model_usage'
+require_relative 'claude_collector/parser'
+require_relative 'claude_collector/repository'
+require_relative 'claude_collector/watcher'
 
 module ClaudeCollector
   def self.run
-    database_url = ENV.fetch("DATABASE_URL")
-    json_path = ENV.fetch("CLAUDE_JSON_PATH")
+    database_url = ENV.fetch('DATABASE_URL')
+    json_path = ENV.fetch('CLAUDE_JSON_PATH')
 
-    ActiveRecord::Base.establish_connection(database_url)
-    ActiveRecord::Base.logger = Logger.new($stdout, level: :warn)
-
-    puts "[claude-collector] Connected to database."
+    setup_database(database_url)
 
     parser = Parser.new
     repository = Repository.new
@@ -29,10 +26,24 @@ module ClaudeCollector
       exit(0)
     end
 
-    Signal.trap("TERM", &shutdown)
-    Signal.trap("INT", &shutdown)
+    setup_signal_traps(shutdown)
 
     watcher.start
     sleep
+  end
+
+  class << self
+    private
+
+    def setup_database(database_url)
+      ActiveRecord::Base.establish_connection(database_url)
+      ActiveRecord::Base.logger = Logger.new($stdout, level: :warn)
+      puts '[claude-collector] Connected to database.'
+    end
+
+    def setup_signal_traps(shutdown)
+      Signal.trap('TERM', &shutdown)
+      Signal.trap('INT', &shutdown)
+    end
   end
 end

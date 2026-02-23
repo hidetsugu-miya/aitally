@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "listen"
+require 'listen'
 
 module ClaudeCollector
   class Watcher
@@ -11,13 +11,14 @@ module ClaudeCollector
     end
 
     def start
-      collect("initial")
+      collect('initial')
 
       dir = File.dirname(@path)
       filename = File.basename(@path)
 
-      @listener = Listen.to(dir, only: /\A#{Regexp.escape(filename)}\z/, force_polling: polling?) do |modified, added, _removed|
-        collect("change") if (modified + added).any? { |f| File.basename(f) == filename }
+      @listener = Listen.to(dir, only: /\A#{Regexp.escape(filename)}\z/,
+                                 force_polling: polling?) do |modified, added, _removed|
+        collect('change') if (modified + added).any? { |f| File.basename(f) == filename }
       end
 
       @listener.start
@@ -26,20 +27,20 @@ module ClaudeCollector
 
     def stop
       @listener&.stop
-      puts "[claude-collector] Stopped watching."
+      puts '[claude-collector] Stopped watching.'
     end
 
     private
 
     def polling?
-      ENV["LISTEN_POLLING"] == "true"
+      ENV['LISTEN_POLLING'] == 'true'
     end
 
     def collect(trigger)
       sessions = @parser.parse(@path)
       saved = @repository.save(sessions)
       puts "[claude-collector] [#{trigger}] Parsed #{sessions.size} projects, saved #{saved} new sessions."
-    rescue => e
+    rescue StandardError => e
       warn "[claude-collector] Error during collect (#{trigger}): #{e.message}"
     end
   end

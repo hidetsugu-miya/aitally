@@ -1,0 +1,36 @@
+plugins:
+  - rubocop-rspec
+
+AllCops:
+  TargetRubyVersion: 3.4
+  NewCops: enable
+  # Prismパーサーを使用（Ruby 3.4対応、パフォーマンス向上）
+  ParserEngine: parser_prism
+  SuggestExtensions: false
+  Exclude:
+    - "vendor/**/*"
+    - "db/migrations/**/*"
+
+Style/Documentation:
+  Enabled: false
+
+# Assignment Branch Condition（代入、分岐、条件）の複雑度
+# メソッドの複雑さを測定する指標。無効化により複雑なビジネスロジックも許容
+Metrics/AbcSize:
+  Enabled: false
+
+Metrics/MethodLength:
+  Max: 15
+
+Metrics/BlockLength:
+  Exclude:
+    - "spec/**/*"
+
+RSpec/ExampleLength:
+  Max: 15
+
+RSpec/MultipleExpectations:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Enabled: false

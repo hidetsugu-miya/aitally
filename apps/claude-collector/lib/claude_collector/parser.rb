@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-require "json"
+require 'json'
 
 module ClaudeCollector
   class Parser
@@ -9,31 +9,45 @@ module ClaudeCollector
 
     def parse(path)
       data = read_json(path)
-      return [] unless data.is_a?(Hash) && data["projects"].is_a?(Hash)
+      return [] unless data.is_a?(Hash) && data['projects'].is_a?(Hash)
 
-      data["projects"].filter_map do |project_path, project|
-        session_id = project["lastSessionId"]
-        next unless session_id
-
-        {
-          session_id: session_id,
-          project_path: project_path,
-          cost_usd: project["lastCost"],
-          total_input_tokens: project["lastTotalInputTokens"],
-          total_output_tokens: project["lastTotalOutputTokens"],
-          total_cache_creation_input_tokens: project["lastTotalCacheCreationInputTokens"],
-          total_cache_read_input_tokens: project["lastTotalCacheReadInputTokens"],
-          total_web_search_requests: project["lastTotalWebSearchRequests"],
-          duration_ms: project["lastDuration"],
-          api_duration_ms: project["lastAPIDuration"],
-          lines_added: project["lastLinesAdded"],
-          lines_removed: project["lastLinesRemoved"],
-          model_usages: parse_model_usages(project["lastModelUsage"])
-        }
+      data['projects'].filter_map do |project_path, project|
+        build_session(project_path, project)
       end
     end
 
     private
+
+    def build_session(project_path, project)
+      session_id = project['lastSessionId']
+      return unless session_id
+
+      base_attrs(project_path, session_id, project)
+        .merge(token_attrs(project))
+        .merge(model_usages: parse_model_usages(project['lastModelUsage']))
+    end
+
+    def base_attrs(project_path, session_id, project)
+      {
+        session_id: session_id,
+        project_path: project_path,
+        cost_usd: project['lastCost'],
+        duration_ms: project['lastDuration'],
+        api_duration_ms: project['lastAPIDuration'],
+        lines_added: project['lastLinesAdded'],
+        lines_removed: project['lastLinesRemoved']
+      }
+    end
+
+    def token_attrs(project)
+      {
+        total_input_tokens: project['lastTotalInputTokens'],
+        total_output_tokens: project['lastTotalOutputTokens'],
+        total_cache_creation_input_tokens: project['lastTotalCacheCreationInputTokens'],
+        total_cache_read_input_tokens: project['lastTotalCacheReadInputTokens'],
+        total_web_search_requests: project['lastTotalWebSearchRequests']
+      }
+    end
 
     def read_json(path)
       retries = 0
@@ -56,12 +70,12 @@ module ClaudeCollector
       model_usage_hash.map do |model_id, usage|
         {
           model_id: model_id,
-          input_tokens: usage["inputTokens"],
-          output_tokens: usage["outputTokens"],
-          cache_read_input_tokens: usage["cacheReadInputTokens"],
-          cache_creation_input_tokens: usage["cacheCreationInputTokens"],
-          web_search_requests: usage["webSearchRequests"],
-          cost_usd: usage["costUSD"]
+          input_tokens: usage['inputTokens'],
+          output_tokens: usage['outputTokens'],
+          cache_read_input_tokens: usage['cacheReadInputTokens'],
+          cache_creation_input_tokens: usage['cacheCreationInputTokens'],
+          web_search_requests: usage['webSearchRequests'],
+          cost_usd: usage['costUSD']
         }
       end
     end

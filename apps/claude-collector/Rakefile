@@ -1,26 +1,27 @@
 # frozen_string_literal: true
 
-require "active_record"
+require 'active_record'
 
-database_url = ENV.fetch("DATABASE_URL")
+database_url = ENV.fetch('DATABASE_URL')
 ActiveRecord::Base.establish_connection(database_url)
 
 namespace :db do
-  desc "Run migrations"
+  desc 'Run migrations'
   task :migrate do
-    ActiveRecord::MigrationContext.new(File.expand_path("db/migrations", __dir__)).migrate
-    puts "Migrations complete."
+    ActiveRecord::MigrationContext.new(File.expand_path('db/migrations', __dir__)).migrate
+    puts 'Migrations complete.'
   end
 
-  desc "Rollback last migration"
+  desc 'Rollback last migration'
   task :rollback do
-    ActiveRecord::MigrationContext.new(File.expand_path("db/migrations", __dir__)).rollback
-    puts "Rollback complete."
+    ActiveRecord::MigrationContext.new(File.expand_path('db/migrations', __dir__)).rollback
+    puts 'Rollback complete.'
   end
 
-  desc "Show migration status"
+  desc 'Show migration status'
   task :status do
-    ActiveRecord::MigrationContext.new(File.expand_path("db/migrations", __dir__)).migrations_status.each do |status, version, name|
+    ActiveRecord::MigrationContext.new(File.expand_path('db/migrations',
+                                                        __dir__)).migrations_status.each do |status, version, name|
       puts "#{status.center(8)} #{version.ljust(14)} #{name}"
     end
   end

@@ -22,7 +22,10 @@ services:
       LISTEN_POLLING: "true"
     volumes:
       - ~/.claude.json:/data/claude.json:ro
+      - claude_collector_bundle:/usr/local/bundle
+      - ./apps/claude-collector:/app
     restart: unless-stopped
 
 volumes:
   postgres_data:
+  claude_collector_bundle:

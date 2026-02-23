@@ -5,8 +5,8 @@ RSpec.describe ClaudeCollector::Repository do
 
   let(:session_data) do
     {
-      session_id: "sess-repo-001",
-      project_path: "/home/user/project",
+      session_id: 'sess-repo-001',
+      project_path: '/home/user/project',
       cost_usd: 0.05,
       total_input_tokens: 1000,
       total_output_tokens: 500,
@@ -19,7 +19,7 @@ RSpec.describe ClaudeCollector::Repository do
       lines_removed: 5,
       model_usages: [
         {
-          model_id: "claude-opus-4",
+          model_id: 'claude-opus-4',
           input_tokens: 1000,
           output_tokens: 500,
           cache_read_input_tokens: nil,
@@ -31,20 +31,20 @@ RSpec.describe ClaudeCollector::Repository do
     }
   end
 
-  describe "#known_session_ids" do
-    it "returns a set of existing session_ids" do
-      ClaudeCollector::Models::Session.create!(session_id: "sess-known", project_path: "/tmp")
+  describe '#known_session_ids' do
+    it 'returns a set of existing session_ids' do
+      ClaudeCollector::Models::Session.create!(session_id: 'sess-known', project_path: '/tmp')
 
-      expect(repository.known_session_ids).to include("sess-known")
+      expect(repository.known_session_ids).to include('sess-known')
     end
 
-    it "returns empty set when no sessions exist" do
+    it 'returns empty set when no sessions exist' do
       expect(repository.known_session_ids).to be_empty
     end
   end
 
-  describe "#save" do
-    it "saves new sessions with model_usages" do
+  describe '#save' do
+    it 'saves new sessions with model_usages' do
       saved = repository.save([session_data])
 
       expect(saved).to eq(1)
@@ -52,12 +52,12 @@ RSpec.describe ClaudeCollector::Repository do
       expect(ClaudeCollector::Models::ModelUsage.count).to eq(1)
 
       session = ClaudeCollector::Models::Session.first
-      expect(session.session_id).to eq("sess-repo-001")
-      expect(session.model_usages.first.model_id).to eq("claude-opus-4")
+      expect(session.session_id).to eq('sess-repo-001')
+      expect(session.model_usages.first.model_id).to eq('claude-opus-4')
     end
 
-    it "skips sessions already in known_session_ids" do
-      ClaudeCollector::Models::Session.create!(session_id: "sess-repo-001", project_path: "/tmp")
+    it 'skips sessions already in known_session_ids' do
+      ClaudeCollector::Models::Session.create!(session_id: 'sess-repo-001', project_path: '/tmp')
 
       saved = repository.save([session_data])
 
@@ -65,18 +65,17 @@ RSpec.describe ClaudeCollector::Repository do
       expect(ClaudeCollector::Models::Session.count).to eq(1)
     end
 
-    it "handles RecordNotUnique by skipping" do
-      # First save succeeds
+    it 'handles RecordNotUnique by skipping' do
       repository.save([session_data])
 
-      # Simulate race condition: known_session_ids returns empty but record exists
-      allow(repository).to receive(:known_session_ids).and_return(Set.new)
+      test_repo = described_class.new
+      allow(test_repo).to receive(:known_session_ids).and_return(Set.new)
 
-      saved = repository.save([session_data])
+      saved = test_repo.save([session_data])
       expect(saved).to eq(0)
     end
 
-    it "returns 0 for empty array" do
+    it 'returns 0 for empty array' do
       expect(repository.save([])).to eq(0)
     end
   end

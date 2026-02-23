@@ -1,14 +1,19 @@
 # frozen_string_literal: true
 
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-gem "activerecord", "~> 8.0"
-gem "pg", "~> 1.5"
-gem "listen", "~> 3.9"
-gem "rake", "~> 13.0"
+gem 'activerecord', '~> 8.0'
+gem 'listen', '~> 3.9'
+gem 'pg', '~> 1.5'
+gem 'rake', '~> 13.0'
+
+group :development, :test do
+  gem 'rubocop', '~> 1.75', require: false
+  gem 'rubocop-rspec', '~> 3.5', require: false
+end
 
 group :test do
-  gem "rspec", "~> 3.13"
-  gem "simplecov", "~> 0.22"
-  gem "sqlite3", "~> 2.6"
+  gem 'rspec', '~> 3.13'
+  gem 'simplecov', '~> 0.22'
+  gem 'sqlite3', '~> 2.6'
 end

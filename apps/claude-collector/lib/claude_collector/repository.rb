@@ -13,18 +13,25 @@ module ClaudeCollector
 
       saved = 0
       new_sessions.each do |session_data|
-        ActiveRecord::Base.transaction do
-          model_usages_data = session_data.delete(:model_usages)
-          session = Models::Session.create!(session_data)
-          model_usages_data.each do |usage_data|
-            session.model_usages.create!(usage_data)
-          end
-          saved += 1
-        end
-      rescue ActiveRecord::RecordNotUnique
-        # Another process already inserted this session — skip
+        saved += 1 if save_session(session_data)
       end
       saved
+    end
+
+    private
+
+    def save_session(session_data)
+      ActiveRecord::Base.transaction do
+        model_usages_data = session_data[:model_usages] || []
+        session = Models::Session.create!(session_data.except(:model_usages))
+        model_usages_data.each do |usage_data|
+          session.model_usages.create!(usage_data)
+        end
+      end
+      true
+    rescue ActiveRecord::RecordNotUnique
+      # Another process already inserted this session — skip
+      false
     end
   end
 end

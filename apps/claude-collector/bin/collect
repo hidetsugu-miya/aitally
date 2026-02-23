@@ -4,6 +4,6 @@
 $stdout.sync = true
 $stderr.sync = true
 
-require_relative "../lib/claude_collector"
+require_relative '../lib/claude_collector'
 
 ClaudeCollector.run

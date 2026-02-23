@@ -1,14 +1,13 @@
 FROM ruby:4.0.1-slim
 
 RUN apt-get update -qq && \
-    apt-get install -y --no-install-recommends build-essential libpq-dev && \
+    apt-get install -y --no-install-recommends build-essential libpq-dev libsqlite3-dev && \
     rm -rf /var/lib/apt/lists/*
 
 WORKDIR /app
 
 COPY Gemfile Gemfile.lock ./
-RUN bundle config set --local without 'development test' && \
-    bundle install
+RUN bundle install
 
 COPY . .
 
