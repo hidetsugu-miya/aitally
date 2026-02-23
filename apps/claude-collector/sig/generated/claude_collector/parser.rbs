@@ -1,0 +1,38 @@
+# Generated from lib/claude_collector/parser.rb with RBS::Inline
+
+module ClaudeCollector
+  class Parser
+    MAX_RETRIES: ::Integer
+
+    RETRY_DELAY: ::Float
+
+    # @rbs path: String
+    # @rbs return: Array[Hash[Symbol, Object]]
+    def parse: (String path) -> Array[Hash[Symbol, Object]]
+
+    private
+
+    # @rbs project_path: String
+    # @rbs project: Hash[String, Object]
+    # @rbs return: Hash[Symbol, Object]?
+    def build_session: (String project_path, Hash[String, Object] project) -> Hash[Symbol, Object]?
+
+    # @rbs project_path: String
+    # @rbs session_id: String
+    # @rbs project: Hash[String, Object]
+    # @rbs return: Hash[Symbol, Object]
+    def base_attrs: (String project_path, String session_id, Hash[String, Object] project) -> Hash[Symbol, Object]
+
+    # @rbs project: Hash[String, Object]
+    # @rbs return: Hash[Symbol, Object]
+    def token_attrs: (Hash[String, Object] project) -> Hash[Symbol, Object]
+
+    # @rbs path: String
+    # @rbs return: Hash[String, Object]?
+    def read_json: (String path) -> Hash[String, Object]?
+
+    # @rbs model_usage_hash: Object
+    # @rbs return: Array[Hash[Symbol, Object]]
+    def parse_model_usages: (Object model_usage_hash) -> Array[Hash[Symbol, Object]]
+  end
+end

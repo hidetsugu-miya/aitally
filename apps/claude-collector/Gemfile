@@ -8,8 +8,11 @@ gem 'pg', '~> 1.5'
 gem 'rake', '~> 13.0'
 
 group :development, :test do
+  gem 'rbs', require: false
+  gem 'rbs-inline', require: false
   gem 'rubocop', '~> 1.75', require: false
   gem 'rubocop-rspec', '~> 3.5', require: false
+  gem 'steep', require: false
 end
 
 group :test do

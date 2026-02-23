@@ -1,0 +1,18 @@
+# Generated from lib/claude_collector/repository.rb with RBS::Inline
+
+module ClaudeCollector
+  class Repository
+    # @rbs return: Set[String]
+    def known_session_ids: () -> Set[String]
+
+    # @rbs sessions: Array[Hash[Symbol, Object]]
+    # @rbs return: Integer
+    def save: (Array[Hash[Symbol, Object]] sessions) -> Integer
+
+    private
+
+    # @rbs session_data: Hash[Symbol, Object]
+    # @rbs return: bool
+    def save_session: (Hash[Symbol, Object] session_data) -> bool
+  end
+end

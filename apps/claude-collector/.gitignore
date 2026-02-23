@@ -1,3 +1,4 @@
 /.bundle/
 /vendor/
 /coverage
+/.gem_rbs_collection

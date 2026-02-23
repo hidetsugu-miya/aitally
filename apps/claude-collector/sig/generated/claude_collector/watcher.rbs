@@ -1,0 +1,34 @@
+# Generated from lib/claude_collector/watcher.rb with RBS::Inline
+
+module ClaudeCollector
+  class Watcher
+    @path: String
+
+    @parser: Parser
+
+    @repository: Repository
+
+    @listener: Listen::Listener?
+
+    # @rbs path: String
+    # @rbs parser: Parser
+    # @rbs repository: Repository
+    # @rbs return: void
+    def initialize: (String path, parser: Parser, repository: Repository) -> void
+
+    # @rbs return: void
+    def start: () -> void
+
+    # @rbs return: void
+    def stop: () -> void
+
+    private
+
+    # @rbs return: bool
+    def polling?: () -> bool
+
+    # @rbs trigger: String
+    # @rbs return: void
+    def collect: (String trigger) -> void
+  end
+end

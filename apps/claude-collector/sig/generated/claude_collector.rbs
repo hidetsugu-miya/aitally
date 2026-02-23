@@ -1,0 +1,12 @@
+# Generated from lib/claude_collector.rb with RBS::Inline
+
+module ClaudeCollector
+  # @rbs () -> void
+  def self.run: () -> void
+
+  # @rbs (String database_url) -> void
+  private def self.setup_database: (String database_url) -> void
+
+  # @rbs (Proc shutdown) -> void
+  private def self.setup_signal_traps: (Proc shutdown) -> void
+end

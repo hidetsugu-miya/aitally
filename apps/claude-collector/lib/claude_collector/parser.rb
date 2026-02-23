@@ -1,12 +1,16 @@
 # frozen_string_literal: true
 
+# rbs_inline: enabled
+
 require 'json'
 
 module ClaudeCollector
   class Parser
-    MAX_RETRIES = 3
-    RETRY_DELAY = 0.3
+    MAX_RETRIES = 3 # : Integer
+    RETRY_DELAY = 0.3 # : Float
 
+    # @rbs path: String
+    # @rbs return: Array[Hash[Symbol, Object]]
     def parse(path)
       data = read_json(path)
       return [] unless data.is_a?(Hash) && data['projects'].is_a?(Hash)
@@ -18,15 +22,24 @@ module ClaudeCollector
 
     private
 
+    # @rbs project_path: String
+    # @rbs project: Hash[String, Object]
+    # @rbs return: Hash[Symbol, Object]?
     def build_session(project_path, project)
       session_id = project['lastSessionId']
       return unless session_id
+
+      # @type var session_id: String
 
       base_attrs(project_path, session_id, project)
         .merge(token_attrs(project))
         .merge(model_usages: parse_model_usages(project['lastModelUsage']))
     end
 
+    # @rbs project_path: String
+    # @rbs session_id: String
+    # @rbs project: Hash[String, Object]
+    # @rbs return: Hash[Symbol, Object]
     def base_attrs(project_path, session_id, project)
       {
         session_id: session_id,
@@ -39,6 +52,8 @@ module ClaudeCollector
       }
     end
 
+    # @rbs project: Hash[String, Object]
+    # @rbs return: Hash[Symbol, Object]
     def token_attrs(project)
       {
         total_input_tokens: project['lastTotalInputTokens'],
@@ -49,6 +64,8 @@ module ClaudeCollector
       }
     end
 
+    # @rbs path: String
+    # @rbs return: Hash[String, Object]?
     def read_json(path)
       retries = 0
       begin
@@ -64,6 +81,8 @@ module ClaudeCollector
       end
     end
 
+    # @rbs model_usage_hash: Object
+    # @rbs return: Array[Hash[Symbol, Object]]
     def parse_model_usages(model_usage_hash)
       return [] unless model_usage_hash.is_a?(Hash)
 

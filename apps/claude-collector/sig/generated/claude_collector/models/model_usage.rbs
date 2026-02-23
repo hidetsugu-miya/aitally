@@ -1,0 +1,9 @@
+# Generated from lib/claude_collector/models/model_usage.rb with RBS::Inline
+
+module ClaudeCollector
+  module Models
+    class ModelUsage < ActiveRecord::Base
+      def self.create!: (Hash[Symbol, Object]) -> ModelUsage
+    end
+  end
+end

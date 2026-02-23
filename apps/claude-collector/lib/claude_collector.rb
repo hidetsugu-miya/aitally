@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rbs_inline: enabled
+
 require 'active_record'
 
 require_relative 'claude_collector/models/session'
@@ -9,6 +11,7 @@ require_relative 'claude_collector/repository'
 require_relative 'claude_collector/watcher'
 
 module ClaudeCollector
+  # @rbs () -> void
   def self.run
     database_url = ENV.fetch('DATABASE_URL')
     json_path = ENV.fetch('CLAUDE_JSON_PATH')
@@ -35,12 +38,14 @@ module ClaudeCollector
   class << self
     private
 
+    # @rbs (String database_url) -> void
     def setup_database(database_url)
       ActiveRecord::Base.establish_connection(database_url)
       ActiveRecord::Base.logger = Logger.new($stdout, level: :warn)
       puts '[claude-collector] Connected to database.'
     end
 
+    # @rbs (Proc shutdown) -> void
     def setup_signal_traps(shutdown)
       Signal.trap('TERM', &shutdown)
       Signal.trap('INT', &shutdown)

@@ -1,0 +1,13 @@
+# Generated from lib/claude_collector/models/session.rb with RBS::Inline
+
+module ClaudeCollector
+  module Models
+    class Session < ActiveRecord::Base
+      def self.pluck: (*Symbol) -> Array[String]
+
+      def self.create!: (Hash[Symbol, Object]) -> Session
+
+      def model_usages: () -> ActiveRecord::Associations::CollectionProxy
+    end
+  end
+end
