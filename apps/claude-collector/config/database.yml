@@ -1,0 +1,8 @@
+# Reference only — the app uses DATABASE_URL environment variable.
+development:
+  adapter: postgresql
+  host: postgres
+  port: 5432
+  database: aitally_claude_collector_development
+  username: aitally
+  password: aitally

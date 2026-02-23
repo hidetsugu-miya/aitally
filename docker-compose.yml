@@ -12,5 +12,17 @@ services:
       - ./docker/postgres/init:/docker-entrypoint-initdb.d
     restart: unless-stopped
 
+  claude-collector:
+    build: ./apps/claude-collector
+    depends_on:
+      - postgres
+    environment:
+      DATABASE_URL: postgresql://aitally:aitally@postgres:5432/aitally_claude_collector_development
+      CLAUDE_JSON_PATH: /data/claude.json
+      LISTEN_POLLING: "true"
+    volumes:
+      - ~/.claude.json:/data/claude.json:ro
+    restart: unless-stopped
+
 volumes:
   postgres_data:
