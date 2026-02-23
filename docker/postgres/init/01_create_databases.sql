@@ -1,0 +1,2 @@
+CREATE DATABASE aitally_claude_collector_development;
+CREATE DATABASE aitally_claude_collector_test;

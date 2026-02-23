@@ -18,6 +18,7 @@ Claude Code が `~/.claude.json` に記録するプロジェクト別・モデ�
 ## 技術スタック
 
 - Ruby
+- PostgreSQL 17（モノレポ共有インスタンス）
 
 ## ディレクトリ構成
 
@@ -28,8 +29,20 @@ apps/claude-collector/
 ## セットアップ
 
 ```bash
+# PostgreSQL 起動（モノレポルートで）
+docker compose up -d
+
+# 依存関係インストール
 cd apps/claude-collector
 bundle install
+```
+
+### データベース接続
+
+モノレポルートの Docker Compose で起動する共有 PostgreSQL に接続する。
+
+```text
+postgresql://aitally:aitally@localhost:5433/aitally_claude_collector_development
 ```
 
 ## モノレポ内の位置づけ
