@@ -1,0 +1,229 @@
+#!/usr/bin/env ruby
+# frozen_string_literal: true
+# rubocop:disable all
+
+require 'json'
+
+$stdout.sync = true
+
+# coverage/.resultset.json を解析してカバレッジ未達の行を抽出するスクリプト
+class CoverageAnalyzer
+  # @param filter_path [String, nil] フィルタリングするパス（nilの場合は全ファイル）
+  def initialize(filter_path: nil)
+    @resultset_path = 'coverage/.resultset.json'
+    @filter_path = filter_path
+  end
+
+  # 解析を実行して結果を出力
+  def analyze
+    data = load_resultset
+
+    unless data
+      puts("Error: #{@resultset_path} が見つかりません")
+      exit(1)
+    end
+
+    coverage_data = extract_coverage_data(data)
+
+    unless coverage_data
+      puts('Error: カバレッジデータの形式が不正です')
+      exit(1)
+    end
+
+    uncovered_files = analyze_uncovered_lines(coverage_data)
+    print_json_results(uncovered_files)
+  end
+
+  private
+
+  # .resultset.json を読み込む
+  def load_resultset
+    return nil unless File.exist?(@resultset_path)
+
+    JSON.parse(File.read(@resultset_path))
+  rescue JSON::ParserError => e
+    puts("Error: JSON解析エラー - #{e.message}")
+    nil
+  end
+
+  # カバレッジデータを抽出
+  def extract_coverage_data(data)
+    merged_coverage = {}
+
+    data.each_value do |result|
+      next unless result['coverage']
+
+      result['coverage'].each do |file_path, file_data|
+        if merged_coverage[file_path]
+          merged_coverage[file_path]['lines'] = merge_line_coverage(
+            merged_coverage[file_path]['lines'], file_data['lines']
+          )
+        else
+          merged_coverage[file_path] = file_data.dup
+        end
+      end
+    end
+
+    merged_coverage
+  end
+
+  # 2つのライン配列をマージ（各要素を合算）
+  def merge_line_coverage(lines1, lines2)
+    max_length = [lines1.length, lines2.length].max
+
+    Array.new(max_length) do |i|
+      val1 = lines1[i]
+      val2 = lines2[i]
+
+      if val1.nil? && val2.nil?
+        nil
+      elsif val1.nil? || val2.nil?
+        val1 || val2
+      else
+        val1 + val2
+      end
+    end
+  end
+
+  # カバーされていない行を解析
+  def analyze_uncovered_lines(coverage_data)
+    uncovered_files = []
+
+    coverage_data.each do |file_path, file_data|
+      # フィルタリング（指定パスが含まれない場合はスキップ）
+      next unless @filter_path.nil? || file_path.include?(@filter_path)
+
+      lines = file_data['lines']
+      uncovered_lines = extract_uncovered_line_numbers(lines)
+      next if uncovered_lines.empty?
+
+      # nocov範囲を除外
+      normalized_path = normalize_path(file_path)
+      uncovered_lines = filter_nocov_lines(normalized_path, uncovered_lines)
+
+      next if uncovered_lines.empty?
+
+      uncovered_files << {
+        path: normalized_path,
+        uncovered_lines:
+      }
+    end
+
+    # 未カバー行数でソート（多い順）
+    uncovered_files.sort_by { |f| -f[:uncovered_lines].length }
+  end
+
+  # 未カバー行番号の配列を抽出
+  def extract_uncovered_line_numbers(lines)
+    uncovered = []
+    lines.each_with_index do |count, index|
+      uncovered << (index + 1) if !count.nil? && count.zero?
+    end
+    uncovered
+  end
+
+  # ファイルからnocov範囲を取得
+  def nocov_ranges(file_path)
+    return [] unless File.exist?(file_path)
+
+    ranges = []
+    in_nocov = false
+    start_line = nil
+
+    File.readlines(file_path).each_with_index do |line, idx|
+      next unless line.include?(':nocov:')
+
+      if in_nocov
+        ranges << (start_line..(idx + 1))
+        in_nocov = false
+      else
+        start_line = idx + 1
+        in_nocov = true
+      end
+    end
+
+    ranges
+  end
+
+  # nocov範囲を除外した未カバー行を取得
+  def filter_nocov_lines(file_path, uncovered_lines)
+    ranges = nocov_ranges(file_path)
+    return uncovered_lines if ranges.empty?
+
+    uncovered_lines.reject do |line_num|
+      ranges.any? { |range| range.cover?(line_num) }
+    end
+  end
+
+  # パスを正規化（/app/ を削除）
+  def normalize_path(path)
+    path.gsub(%r{^/app/}, '')
+  end
+
+  # JSON形式で結果を出力
+  def print_json_results(uncovered_files)
+    result = uncovered_files.map do |file|
+      {
+        path: file[:path],
+        uncovered_line_ranges: format_line_ranges(file[:uncovered_lines]),
+        uncovered_lines: file[:uncovered_lines]
+      }
+    end
+
+    puts JSON.pretty_generate(result)
+
+    if uncovered_files.empty?
+      warn '[Coverage] 未達なし (100%)'
+    else
+      total_lines = uncovered_files.sum { |f| f[:uncovered_lines].length }
+      warn "[Coverage] 未達: #{uncovered_files.length}ファイル / #{total_lines}行"
+    end
+  end
+
+  # 行番号を範囲形式に整形（例: 1-5, 7, 9-12）
+  def format_line_ranges(lines)
+    return '' if lines.empty?
+
+    ranges = []
+    start = lines.first
+    prev = start
+
+    lines[1..].each do |line|
+      if line == prev + 1
+        prev = line
+      else
+        ranges << (start == prev ? start.to_s : "#{start}-#{prev}")
+        start = line
+        prev = line
+      end
+    end
+
+    ranges << (start == prev ? start.to_s : "#{start}-#{prev}")
+    ranges.join(', ')
+  end
+end
+
+# コマンドライン引数の解析
+if __FILE__ == $PROGRAM_NAME
+  require 'optparse'
+
+  options = {
+    filter_path: nil
+  }
+
+  OptionParser.new do |opts|
+    opts.banner = '使い方: ruby bin/analyze_coverage [options]'
+
+    opts.on('-f', '--filter PATH', 'フィルタリングするパス（例: lib/claude_collector）') do |path|
+      options[:filter_path] = path
+    end
+
+    opts.on('-h', '--help', 'ヘルプを表示') do
+      puts(opts)
+      exit
+    end
+  end.parse!
+
+  analyzer = CoverageAnalyzer.new(filter_path: options[:filter_path])
+  analyzer.analyze
+end
