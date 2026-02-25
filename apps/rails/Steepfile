@@ -1,0 +1,17 @@
+# frozen_string_literal: true
+
+D = Steep::Diagnostic
+
+target :app do
+  signature 'sig/generated'
+  signature 'sig/shim'
+
+  collection_config 'rbs_collection.yaml'
+
+  check 'app'
+  check 'lib'
+
+  configure_code_diagnostics(D::Ruby.default) do |config|
+    config[D::Ruby::UnannotatedEmptyCollection] = nil
+  end
+end

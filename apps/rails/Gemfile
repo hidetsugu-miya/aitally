@@ -31,6 +31,9 @@ group :development, :test do
   gem 'brakeman', require: false
   gem 'rubocop', require: false
   gem 'rubocop-rails', require: false
+  gem 'rbs', require: false
+  gem 'rbs-inline', require: false
   gem 'rubocop-rspec', require: false
   gem 'rubocop-rspec_rails', require: false
+  gem 'steep', require: false
 end

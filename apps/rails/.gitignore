@@ -4,3 +4,4 @@
 /log/
 /config/master.key
 /config/credentials/*.key
+/.gem_rbs_collection/
