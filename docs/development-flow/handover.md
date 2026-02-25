@@ -1,6 +1,22 @@
 ---
-phase: design
+phase: tasks
 phase_status: completed
+tasks:
+- {id: 1, status: planning}
+- {id: 2, status: pending}
+- {id: 3, status: pending}
+- {id: 4, status: pending}
+- {id: 5, status: pending}
+- {id: 6, status: pending}
+- {id: 7, status: pending}
+- {id: 8, status: pending}
+- {id: 9, status: pending}
+- {id: 10, status: pending}
+- {id: 11, status: pending}
+- {id: 12, status: pending}
+- {id: 13, status: pending}
+- {id: 14, status: pending}
+- {id: 15, status: pending}
 ---
 
 # 引き継ぎ書
@@ -21,6 +37,8 @@ phase_status: completed
 
 - `docs/development-flow/requirement.md`
 - `docs/development-flow/design.md`
+- `docs/development-flow/tasks.md`
+- `docs/development-flow/tasks/task01.md` 〜 `task15.md`
 
 ---
 
@@ -37,4 +55,4 @@ phase_status: completed
 
 ## 次の作業
 
-タスク化フェーズでタスク分解を実施する（`/development-flow`）
+実装フェーズでタスク1から実装開始（`/development-flow`）
