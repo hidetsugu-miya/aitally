@@ -45,6 +45,33 @@ check_jq_available() {
 }
 
 # ============================================================
+# Docker サービス解決
+# ============================================================
+
+# ファイルパスから Docker サービス名を判定
+resolve_docker_service() {
+    local file_path="$1"
+    case "$file_path" in
+        *apps/claude-collector/*) echo "claude-collector" ;;
+        *apps/rails/*)            echo "rails-api" ;;
+        *)                        return 1 ;;
+    esac
+}
+
+# ファイルパスからコンテナ内パスを算出
+resolve_container_path() {
+    local file_path="$1"
+    local service
+    service=$(resolve_docker_service "$file_path") || return 1
+
+    case "$service" in
+        claude-collector) echo "/app/${file_path#*apps/claude-collector/}" ;;
+        rails-api)        echo "/app/${file_path#*apps/rails/}" ;;
+        *)                return 1 ;;
+    esac
+}
+
+# ============================================================
 # JSON解析
 # ============================================================
 
