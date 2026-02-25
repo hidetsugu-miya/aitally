@@ -1,5 +1,5 @@
 ---
-phase: requirement
+phase: design
 phase_status: completed
 ---
 
@@ -20,15 +20,21 @@ phase_status: completed
 ## 成果物
 
 - `docs/development-flow/requirement.md`
+- `docs/development-flow/design.md`
 
 ---
 
 ## 引き継ぎ事項
 
-特になし
+### ユーザーフィードバック（設計レビュー）
+
+1. **カバレッジ enforcement**: simplecov の minimum_coverage 100% を設計方針として明記すること（FUNC-002 に反映済み）
+2. **セッション詳細APIパラメータ変更**: REQ-006 のセッション詳細 API は主キー（id）ではなく session_id カラム（Claude セッション識別子）をパラメータとして使用すること（FUNC-007 に反映済み）
+3. **開発順序変更**: FUNC-009（コーディングルールファイル作成）を開発順序の先頭に移動すること。実装時のルール基盤となるため、他機能より先に整備する（反映済み）
+4. **FUNC-ID リナンバリング**: コーディングルールファイル作成を FUNC-001 とし、既存 FUNC-001〜008 を FUNC-002〜009 に繰り下げること。全セクション（トレーサビリティマトリクス、機能一覧、機能間依存関係、機能詳細）のIDを一括変更する
 
 ---
 
 ## 次の作業
 
-設計フェーズで機能設計を実施する（`/design`）
+タスク化フェーズでタスク分解を実施する（`/development-flow`）
