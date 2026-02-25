@@ -160,16 +160,19 @@ perform_all_checks() {
         fi
     fi
 
-    # チェック3: YARD形式型注釈（全Rubyファイル）
-    if check_yard_type_annotations "$content"; then
-        log_debug "$LOG_FILE" "Found YARD type annotations"
-        errors+=("$(generate_yard_type_annotation_error_message "$(get_yard_type_annotations_details "$content")")")
-    fi
+    # チェック3-4: rbs-inline関連（rbs-inline使用アプリのみ）
+    if [[ "$ruby_file" == *apps/claude-collector/* ]]; then
+        # チェック3: YARD形式型注釈
+        if check_yard_type_annotations "$content"; then
+            log_debug "$LOG_FILE" "Found YARD type annotations"
+            errors+=("$(generate_yard_type_annotation_error_message "$(get_yard_type_annotations_details "$content")")")
+        fi
 
-    # チェック4: rbs-inline untyped（全Rubyファイル）
-    if check_rbs_untyped "$content"; then
-        log_debug "$LOG_FILE" "Found rbs-inline untyped"
-        errors+=("$(generate_rbs_untyped_error_message "$(get_rbs_untyped_details "$content")")")
+        # チェック4: rbs-inline untyped
+        if check_rbs_untyped "$content"; then
+            log_debug "$LOG_FILE" "Found rbs-inline untyped"
+            errors+=("$(generate_rbs_untyped_error_message "$(get_rbs_untyped_details "$content")")")
+        fi
     fi
 
     # エラーが見つかった場合、統合メッセージを生成
