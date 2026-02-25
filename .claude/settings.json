@@ -1,0 +1,48 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-settings.json",
+  "hooks": {
+    "SessionStart": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/SessionStart/docker-app.sh"
+          }
+        ]
+      }
+    ],
+    "PostToolUse": [
+      {
+        "matcher": "Write|Edit|MultiEdit",
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/PostToolUse/ruby/rubocop.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/PostToolUse/ruby/check-class-file.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/PostToolUse/ruby/check-spec-file.sh"
+          },
+          {
+            "type": "command",
+            "command": ".claude/hooks/PostToolUse/ruby/rbs-inline.sh"
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": ".claude/hooks/Stop/steep.sh"
+          }
+        ]
+      }
+    ]
+  }
+}
