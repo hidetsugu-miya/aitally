@@ -17,6 +17,13 @@ docker compose exec rails-api bundle exec rubocop <container_path>
 
 `<container_path>` はコンテナ内パス（例: `/app/app/models/claude_collector/session.rb`）。
 
+### Brakeman（セキュリティスキャン）
+
+```bash
+# 全ファイルチェック
+docker compose exec rails-api bundle exec brakeman --no-pager
+```
+
 ### RSpec（テスト）
 
 ```bash
