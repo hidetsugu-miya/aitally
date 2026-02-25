@@ -1,0 +1,6 @@
+/.bundle/
+/vendor/
+/tmp/
+/log/
+/config/master.key
+/config/credentials/*.key

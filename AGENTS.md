@@ -7,4 +7,5 @@
 ```text
 apps/
   claude-collector/   # Claude Code利用統計の収集・蓄積（Ruby）
+  rails/              # API サーバー（Rails API-mode）
 ```

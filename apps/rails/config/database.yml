@@ -1,0 +1,38 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+  host: <%= ENV.fetch("DATABASE_HOST", "postgres") %>
+  port: <%= ENV.fetch("DATABASE_PORT", 5432) %>
+  username: <%= ENV.fetch("DATABASE_USERNAME", "aitally") %>
+  password: <%= ENV.fetch("DATABASE_PASSWORD", "aitally") %>
+  pool: <%= ENV.fetch("RAILS_MAX_THREADS", 5) %>
+
+development:
+  primary:
+    <<: *default
+    database: aitally_rails_api_development
+  claude_collector:
+    <<: *default
+    database: aitally_claude_collector_development
+    database_tasks: false
+    migrations_paths: db/claude_collector_migrate
+
+test:
+  primary:
+    <<: *default
+    database: aitally_rails_api_test
+  claude_collector:
+    <<: *default
+    database: aitally_claude_collector_test
+    database_tasks: false
+    migrations_paths: db/claude_collector_migrate
+
+production:
+  primary:
+    <<: *default
+    database: aitally_rails_api_production
+  claude_collector:
+    <<: *default
+    database: aitally_claude_collector_production
+    database_tasks: false
+    migrations_paths: db/claude_collector_migrate

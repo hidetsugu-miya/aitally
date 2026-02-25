@@ -11,11 +11,17 @@ services:
       - postgres_data:/var/lib/postgresql/data
       - ./docker/postgres/init:/docker-entrypoint-initdb.d
     restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-aitally}"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
 
   claude-collector:
     build: ./apps/claude-collector
     depends_on:
-      - postgres
+      postgres:
+        condition: service_healthy
     environment:
       DATABASE_URL: postgresql://aitally:aitally@postgres:5432/aitally_claude_collector_development
       CLAUDE_JSON_PATH: /data/claude.json
@@ -26,6 +32,25 @@ services:
       - ./apps/claude-collector:/app
     restart: unless-stopped
 
+  rails-api:
+    build: ./apps/rails
+    depends_on:
+      postgres:
+        condition: service_healthy
+    ports:
+      - "${RAILS_API_PORT:-3000}:3000"
+    environment:
+      RAILS_ENV: development
+      DATABASE_HOST: postgres
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: ${POSTGRES_USER:-aitally}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-aitally}
+    volumes:
+      - rails_api_bundle:/usr/local/bundle
+      - ./apps/rails:/app
+    restart: unless-stopped
+
 volumes:
   postgres_data:
   claude_collector_bundle:
+  rails_api_bundle:

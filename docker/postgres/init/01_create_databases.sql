@@ -1,2 +1,4 @@
 CREATE DATABASE aitally_claude_collector_development;
 CREATE DATABASE aitally_claude_collector_test;
+CREATE DATABASE aitally_rails_api_development;
+CREATE DATABASE aitally_rails_api_test;
