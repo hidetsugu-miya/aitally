@@ -1,6 +1,7 @@
 plugins:
   - rubocop-rails
   - rubocop-rspec
+  - rubocop-rspec_rails
 
 AllCops:
   TargetRubyVersion: 3.4
@@ -20,18 +21,114 @@ Style/Documentation:
 Metrics/AbcSize:
   Enabled: false
 
+Metrics/ClassLength:
+  CountComments: false
+  Max: 150
+
+Metrics/ParameterLists:
+  Max: 10
+
 Metrics/MethodLength:
   Max: 15
 
 Metrics/BlockLength:
+  Enabled: false
+
+Lint/CopDirectiveSyntax:
+  Enabled: false
+
+Lint/UselessAssignment:
+  AutoCorrect: false
+
+Style/AsciiComments:
+  Enabled: false
+
+Style/GuardClause:
+  Enabled: false
+
+Style/IfUnlessModifier:
+  Enabled: false
+
+Style/NumericLiterals:
+  Enabled: false
+
+Style/SymbolArray:
+  Enabled: false
+
+Style/WordArray:
+  Enabled: false
+
+Style/CommentedKeyword:
+  Enabled: false
+
+Style/MethodCallWithArgsParentheses:
+  Enabled: true
+  EnforcedStyle: require_parentheses
+
+Style/HashSyntax:
+  EnforcedStyle: ruby19_no_mixed_keys
+  EnforcedShorthandSyntax: always
+
+Style/GlobalStdStream:
   Exclude:
-    - "spec/**/*"
+    - 'config/**/*'
+
+Layout/LineLength:
+  Max: 150
+  Exclude:
+    - 'config/**/*'
+
+Layout/MultilineMethodCallIndentation:
+  EnforcedStyle: indented_relative_to_receiver
+
+Layout/ArgumentAlignment:
+  Enabled: false
+
+Layout/LeadingCommentSpace:
+  AllowRBSInlineAnnotation: true
+
+Rails/DynamicFindBy:
+  Enabled: false
+
+Rails/InverseOf:
+  Enabled: false
+
+Rails/SkipsModelValidations:
+  Enabled: false
+
+Rails/BulkChangeTable:
+  Enabled: false
+
+Rails/FilePath:
+  Exclude:
+    - 'spec/requests/**/*'
+
+RSpec/SpecFilePathFormat:
+  Enabled: true
+  Exclude:
+    - 'spec/requests/**/*'
+
+RSpec/ContextWording:
+  Enabled: false
+
+RSpec/MultipleMemoizedHelpers:
+  Enabled: false
+
+RSpec/NestedGroups:
+  Enabled: false
+
+RSpec/IndexedLet:
+  Enabled: false
 
 RSpec/ExampleLength:
   Max: 15
 
 RSpec/MultipleExpectations:
-  Enabled: false
+  Enabled: true
+  Max: 1
 
-RSpec/NestedGroups:
-  Enabled: false
+RSpec/AnyInstance:
+  Enabled: true
+
+RSpec/VerifiedDoubles:
+  Enabled: true
