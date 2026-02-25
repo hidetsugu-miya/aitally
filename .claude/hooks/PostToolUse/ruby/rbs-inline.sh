@@ -3,6 +3,7 @@
 # Claude Code PostToolUseフック - rbs-inline
 # .rbファイル編集時にrbs-inlineを実行してRBS型定義を最新化し、
 # 変更ファイルパスをsteep_queueに記録する（Stopフックで使用）
+# 各appのDockerコンテナ内で実行
 
 # ============================================================
 # 共通ライブラリ読み込み
@@ -16,15 +17,16 @@ source "$SCRIPT_DIR/../../common.sh"
 # ============================================================
 
 readonly LOG_FILE="tmp/claude/hook/rbs-inline.log"
-readonly STEEP_QUEUE_PREFIX="tmp/claude/steep_queue"
+readonly STEEP_QUEUE_FILE="tmp/claude/steep_queue"
+readonly COMPOSE="docker compose"
 readonly RBS_INLINE_CMD="bundle exec rbs-inline --output"
 
 # ============================================================
 # パーサー
 # ============================================================
 
-# JSON入力から対象Rubyファイルのコンテナ内パスを解析
-# 出力: コンテナ内パス（例: lib/foo.rb, app/models/bar.rb）
+# JSON入力から対象Rubyファイルのモノレポ相対パスを解析
+# 出力: モノレポ相対パス（例: apps/rails/app/models/foo.rb）
 # 戻り値: 0=対象, 1=非対象
 parse_target_ruby_file() {
     local stdin_data="$1"
@@ -36,29 +38,15 @@ parse_target_ruby_file() {
     # .rbファイルのみ対象
     [[ "$file_path" == *.rb ]] || return 1
 
-    # Dockerサービスを判定
-    local service
-    service=$(resolve_docker_service "$file_path") || return 1
-
-    # コンテナ内パスに変換
-    local container_path
-    case "$service" in
-        claude-collector) container_path="${file_path#*apps/claude-collector/}" ;;
-        rails-api)        container_path="${file_path#*apps/rails/}" ;;
-        *)                return 1 ;;
-    esac
-
     # rbs-inline対象ディレクトリを判定
-    case "$service" in
-        claude-collector)
-            [[ "$container_path" == lib/* ]] || return 1
-            ;;
-        rails-api)
-            [[ "$container_path" == app/* || "$container_path" == lib/* ]] || return 1
-            ;;
+    case "$file_path" in
+        *apps/claude-collector/lib/*) ;;
+        *apps/rails/app/*) ;;
+        *apps/rails/lib/*) ;;
+        *) return 1 ;;
     esac
 
-    echo "${service}|${container_path}"
+    echo "$file_path"
     return 0
 }
 
@@ -66,15 +54,50 @@ parse_target_ruby_file() {
 # Docker実行
 # ============================================================
 
-# rbs-inlineを実行（変更ファイルのみ対象）
+# ファイルパスからアプリディレクトリとアプリ相対パスを解決
+# 例: apps/claude-collector/lib/foo.rb → app_dir=apps/claude-collector, rel_path=lib/foo.rb
+resolve_app_context() {
+    local file_path="$1"
+
+    case "$file_path" in
+        apps/claude-collector/*)
+            echo "apps/claude-collector"
+            echo "${file_path#apps/claude-collector/}"
+            ;;
+        apps/rails/*)
+            echo "apps/rails"
+            echo "${file_path#apps/rails/}"
+            ;;
+        *)
+            return 1
+            ;;
+    esac
+}
+
+# rbs-inlineをDocker経由で実行（appコンテナ内でsig/generated/を生成）
 run_rbs_inline() {
     local project_root="$1"
-    local service="$2"
-    local target_file="$3"
+    local target_file="$2"
 
-    local docker_cmd="docker compose exec -T ${service}"
+    local app_context
+    app_context=$(resolve_app_context "$target_file")
+    if [ $? -ne 0 ]; then
+        return 1
+    fi
 
-    cd "$project_root" && $docker_cmd $RBS_INLINE_CMD "$target_file" 2>&1
+    local app_dir
+    app_dir=$(echo "$app_context" | head -1)
+    local rel_path
+    rel_path=$(echo "$app_context" | tail -1)
+
+    local compose_dir="$project_root/$app_dir"
+
+    # コンテナ起動中ならexec（高速）、未起動ならrun --rm
+    if $COMPOSE -f "$compose_dir/docker-compose.yml" ps --status running --format '{{.Name}}' 2>/dev/null | grep -q .; then
+        $COMPOSE -f "$compose_dir/docker-compose.yml" exec -T app $RBS_INLINE_CMD "$rel_path" 2>&1
+    else
+        $COMPOSE -f "$compose_dir/docker-compose.yml" run --rm app $RBS_INLINE_CMD "$rel_path" 2>&1
+    fi
 }
 
 # ============================================================
@@ -100,33 +123,24 @@ main() {
     local stdin_data
     stdin_data=$(cat)
 
-    local parsed
-    parsed=$(parse_target_ruby_file "$stdin_data")
-    if [ $? -ne 0 ] || [ -z "$parsed" ]; then
+    local target_file
+    target_file=$(parse_target_ruby_file "$stdin_data")
+    if [ $? -ne 0 ] || [ -z "$target_file" ]; then
         log_debug "$LOG_FILE" "Not a target file - skipping"
         return 0
     fi
 
-    local service="${parsed%%|*}"
-    local target_file="${parsed#*|}"
-
-    # コンテナが起動しているか確認
-    if ! docker compose ps --status running "$service" --quiet 2>/dev/null | grep -q .; then
-        log_debug "$LOG_FILE" "Container not running ($service) - skipping"
-        return 0
-    fi
-
-    log_debug "$LOG_FILE" "Service: $service, Target file: $target_file"
+    log_debug "$LOG_FILE" "Target file: $target_file"
 
     # rbs-inline実行
     log_debug "$LOG_FILE" "Running rbs-inline"
     local rbs_output
-    rbs_output=$(run_rbs_inline "$project_root" "$service" "$target_file")
+    rbs_output=$(run_rbs_inline "$project_root" "$target_file")
     local rbs_exit_code=$?
     log_debug "$LOG_FILE" "rbs-inline exit code: $rbs_exit_code"
 
-    # steep_queue.{service}にファイルパスを記録（重複排除）
-    local targets_file="$project_root/${STEEP_QUEUE_PREFIX}.${service}"
+    # steep_queueにファイルパスを記録（重複排除）
+    local targets_file="$project_root/${STEEP_QUEUE_FILE}"
     mkdir -p "$(dirname "$targets_file")"
 
     if ! grep -qxF "$target_file" "$targets_file" 2>/dev/null; then

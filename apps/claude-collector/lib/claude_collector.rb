@@ -4,6 +4,12 @@
 
 require 'active_record'
 
+# :nocov:
+class ApplicationRecord < ActiveRecord::Base
+  self.abstract_class = true
+end
+# :nocov:
+
 require_relative 'claude_collector/models/session'
 require_relative 'claude_collector/models/model_usage'
 require_relative 'claude_collector/parser'
@@ -11,6 +17,13 @@ require_relative 'claude_collector/repository'
 require_relative 'claude_collector/watcher'
 
 module ClaudeCollector
+  # @rbs @logger: Logger
+
+  # @rbs return: Logger
+  def self.logger
+    @logger ||= Logger.new($stdout, level: :debug)
+  end
+
   # @rbs () -> void
   def self.run
     database_url = ENV.fetch('DATABASE_URL')
@@ -20,10 +33,10 @@ module ClaudeCollector
 
     parser = Parser.new
     repository = Repository.new
-    watcher = Watcher.new(json_path, parser: parser, repository: repository)
+    watcher = Watcher.new(json_path, parser:, repository:)
 
     shutdown = proc do
-      puts "\n[claude-collector] Shutting down..."
+      logger.debug("\n[claude-collector] Shutting down...")
       watcher.stop
       ActiveRecord::Base.connection_handler.clear_all_connections!
       exit(0)
@@ -42,7 +55,7 @@ module ClaudeCollector
     def setup_database(database_url)
       ActiveRecord::Base.establish_connection(database_url)
       ActiveRecord::Base.logger = Logger.new($stdout, level: :warn)
-      puts '[claude-collector] Connected to database.'
+      logger.debug('[claude-collector] Connected to database.')
     end
 
     # @rbs (Proc shutdown) -> void

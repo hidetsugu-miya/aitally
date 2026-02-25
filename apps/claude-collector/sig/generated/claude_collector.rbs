@@ -1,6 +1,15 @@
 # Generated from lib/claude_collector.rb with RBS::Inline
 
+# :nocov:
+class ApplicationRecord < ActiveRecord::Base
+end
+
 module ClaudeCollector
+  @logger: Logger
+
+  # @rbs return: Logger
+  def self.logger: () -> Logger
+
   # @rbs () -> void
   def self.run: () -> void
 

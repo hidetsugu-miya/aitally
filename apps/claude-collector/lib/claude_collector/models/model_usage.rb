@@ -4,7 +4,7 @@
 
 module ClaudeCollector
   module Models
-    class ModelUsage < ActiveRecord::Base
+    class ModelUsage < ApplicationRecord
       # @rbs!
       #   def self.create!: (Hash[Symbol, Object]) -> ModelUsage
 

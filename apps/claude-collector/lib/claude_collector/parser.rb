@@ -6,8 +6,8 @@ require 'json'
 
 module ClaudeCollector
   class Parser
-    MAX_RETRIES = 3 # : Integer
-    RETRY_DELAY = 0.3 # : Float
+    MAX_RETRIES = 3 #: Integer
+    RETRY_DELAY = 0.3 #: Float
 
     # @rbs path: String
     # @rbs return: Array[Hash[Symbol, Object]]
@@ -42,8 +42,8 @@ module ClaudeCollector
     # @rbs return: Hash[Symbol, Object]
     def base_attrs(project_path, session_id, project)
       {
-        session_id: session_id,
-        project_path: project_path,
+        session_id:,
+        project_path:,
         cost_usd: project['lastCost'],
         duration_ms: project['lastDuration'],
         api_duration_ms: project['lastAPIDuration'],
@@ -76,7 +76,7 @@ module ClaudeCollector
           sleep(RETRY_DELAY)
           retry
         end
-        warn "[claude-collector] JSON parse failed after #{MAX_RETRIES} retries: #{e.message}"
+        warn("[claude-collector] JSON parse failed after #{MAX_RETRIES} retries: #{e.message}")
         nil
       end
     end
@@ -88,7 +88,7 @@ module ClaudeCollector
 
       model_usage_hash.map do |model_id, usage|
         {
-          model_id: model_id,
+          model_id:,
           input_tokens: usage['inputTokens'],
           output_tokens: usage['outputTokens'],
           cache_read_input_tokens: usage['cacheReadInputTokens'],

@@ -1,60 +1,80 @@
 # claude-collector
 
+Dockerコンテナ上で動作する。すべてのコマンド（rubocop, rspec, steep, rbs-inline等）はDocker経由で実行すること。
+
 ## コマンド
 
-### RuboCop（静的解析）
+### Make（推奨）
 
 ```bash
-# 全ファイルチェック
-docker compose exec claude-collector bundle exec rubocop
+# appディレクトリから
+cd apps/claude-collector
+make ci          # rubocop + rspec + steep
+make rspec       # テストのみ
+make up          # コンテナ起動
+make down        # コンテナ停止
 
-# 自動修正
-docker compose exec claude-collector bundle exec rubocop -A
-
-# 特定ファイルのみ
-docker compose exec claude-collector bundle exec rubocop <container_path>
+# ルートから
+make rubocop.claude-collector
+make rspec.claude-collector
+make steep.claude-collector
 ```
 
-`<container_path>` はコンテナ内パス（例: `/app/lib/claude_collector/parser.rb`）。
-
-### RSpec（テスト）
+### RuboCop（静的解析）- Docker実行
 
 ```bash
-# 全テスト実行
-docker compose exec claude-collector bundle exec rspec
+# appディレクトリから
+cd apps/claude-collector
+make rubocop
 
-# 特定ファイルのみ
-docker compose exec claude-collector bundle exec rspec <container_path>
+# 直接実行
+docker compose run --rm app bundle exec rubocop
 ```
 
-### rbs-inline（RBS型定義生成）
+### RSpec（テスト）- Docker実行
 
 ```bash
-# 全ファイルからRBS生成
-docker compose exec claude-collector bundle exec rbs-inline --output lib/
+# appディレクトリから
+cd apps/claude-collector
+docker compose exec app bundle exec rspec
 
 # 特定ファイルのみ
-docker compose exec claude-collector bundle exec rbs-inline --output <container_path>
+docker compose exec app bundle exec rspec <container_path>
+```
+
+`<container_path>` はコンテナ内パス（例: `/app/spec/lib/claude_collector/parser_spec.rb`）。
+
+### RBS Collection（型定義インストール）- Docker実行
+
+```bash
+# ルートから実行（全app一括）
+make rbs-collection
+
+# appディレクトリから
+cd apps/claude-collector
+make rbs-collection
+```
+
+### rbs-inline（RBS型定義生成）- Docker実行
+
+```bash
+# ルートから実行（全app一括）
+make rbs-inline
+
+# appディレクトリから
+cd apps/claude-collector
+make rbs-inline
 ```
 
 生成されたRBSファイルは `sig/generated/` に出力される。
 
-### Steep（型チェック）
+### Steep（型チェック）- Docker実行
 
 ```bash
-# 全ファイルチェック
-docker compose exec claude-collector bundle exec steep check
+# ルートから実行（全app一括）
+make steep
 
-# 特定ファイルのみ
-docker compose exec claude-collector bundle exec steep check <container_path>
-
-# 並列実行
-docker compose exec claude-collector bundle exec steep check --jobs 4
-```
-
-### RBS Collection（gem型定義管理）
-
-```bash
-# gem型定義のインストール・更新
-docker compose exec claude-collector bundle exec rbs collection install
+# appディレクトリから
+cd apps/claude-collector
+make steep
 ```

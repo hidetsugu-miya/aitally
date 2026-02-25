@@ -4,7 +4,7 @@
 
 module ClaudeCollector
   module Models
-    class Session < ActiveRecord::Base
+    class Session < ApplicationRecord
       # @rbs!
       #   def self.pluck: (*Symbol) -> Array[String]
       #   def self.create!: (Hash[Symbol, Object]) -> Session

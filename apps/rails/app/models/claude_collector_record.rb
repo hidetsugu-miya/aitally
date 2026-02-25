@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rbs_inline: enabled
+
 class ClaudeCollectorRecord < ApplicationRecord
   self.abstract_class = true
 

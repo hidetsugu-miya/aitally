@@ -45,29 +45,32 @@ check_jq_available() {
 }
 
 # ============================================================
-# Docker サービス解決
+# Docker Compose ディレクトリ解決
 # ============================================================
 
-# ファイルパスから Docker サービス名を判定
-resolve_docker_service() {
+# ファイルパスからapp内docker-composeディレクトリを解決
+resolve_compose_dir() {
     local file_path="$1"
+    local project_root="$2"
     case "$file_path" in
-        *apps/claude-collector/*) echo "claude-collector" ;;
-        *apps/rails/*)            echo "rails-api" ;;
+        *apps/claude-collector/*) echo "$project_root/apps/claude-collector" ;;
+        *apps/rails/*)            echo "$project_root/apps/rails" ;;
         *)                        return 1 ;;
     esac
 }
 
+# ============================================================
+# Docker パス解決
+# ============================================================
+
 # ファイルパスからコンテナ内パスを算出
 resolve_container_path() {
     local file_path="$1"
-    local service
-    service=$(resolve_docker_service "$file_path") || return 1
 
-    case "$service" in
-        claude-collector) echo "/app/${file_path#*apps/claude-collector/}" ;;
-        rails-api)        echo "/app/${file_path#*apps/rails/}" ;;
-        *)                return 1 ;;
+    case "$file_path" in
+        *apps/claude-collector/*) echo "/app/${file_path#*apps/claude-collector/}" ;;
+        *apps/rails/*)            echo "/app/${file_path#*apps/rails/}" ;;
+        *)                        return 1 ;;
     esac
 }
 

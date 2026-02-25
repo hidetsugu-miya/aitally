@@ -1,0 +1,23 @@
+services:
+  app:
+    build: .
+    environment:
+      DATABASE_URL: postgresql://aitally:aitally@aitally-postgres:5432/aitally_claude_collector_development
+      CLAUDE_JSON_PATH: /data/claude.json
+      LISTEN_POLLING: "true"
+    volumes:
+      - ~/.claude.json:/data/claude.json:ro
+      - claude_collector_bundle:/usr/local/bundle
+      - .:/app
+    restart: unless-stopped
+    networks:
+      - aitally-net
+
+volumes:
+  claude_collector_bundle:
+    name: aitally_claude_collector_bundle
+    external: true
+
+networks:
+  aitally-net:
+    external: true

@@ -161,7 +161,7 @@ perform_all_checks() {
     fi
 
     # チェック3-4: rbs-inline関連（rbs-inline使用アプリのみ）
-    if [[ "$ruby_file" == *apps/claude-collector/* ]]; then
+    if [[ "$ruby_file" == *apps/claude-collector/* ]] || [[ "$ruby_file" == *apps/rails/* ]]; then
         # チェック3: YARD形式型注釈
         if check_yard_type_annotations "$content"; then
             log_debug "$LOG_FILE" "Found YARD type annotations"

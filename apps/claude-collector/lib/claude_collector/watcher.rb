@@ -35,13 +35,13 @@ module ClaudeCollector
 
       listener.start
       @listener = listener
-      puts "[claude-collector] Watching #{@path} (polling=#{polling?})"
+      ClaudeCollector.logger.debug { "[claude-collector] Watching #{@path} (polling=#{polling?})" }
     end
 
     # @rbs return: void
     def stop
       @listener&.stop
-      puts '[claude-collector] Stopped watching.'
+      ClaudeCollector.logger.debug('[claude-collector] Stopped watching.')
     end
 
     private
@@ -56,9 +56,11 @@ module ClaudeCollector
     def collect(trigger)
       sessions = @parser.parse(@path)
       saved = @repository.save(sessions)
-      puts "[claude-collector] [#{trigger}] Parsed #{sessions.size} projects, saved #{saved} new sessions."
+      ClaudeCollector.logger.debug do
+        "[claude-collector] [#{trigger}] Parsed #{sessions.size} projects, saved #{saved} new sessions."
+      end
     rescue StandardError => e
-      warn "[claude-collector] Error during collect (#{trigger}): #{e.message}"
+      warn("[claude-collector] Error during collect (#{trigger}): #{e.message}")
     end
   end
 end

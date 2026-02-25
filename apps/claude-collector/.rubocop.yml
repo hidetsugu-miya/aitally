@@ -34,3 +34,6 @@ RSpec/MultipleExpectations:
 
 RSpec/NestedGroups:
   Enabled: false
+
+Layout/LeadingCommentSpace:
+  AllowRBSInlineAnnotation: true

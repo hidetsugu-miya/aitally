@@ -1,0 +1,26 @@
+services:
+  app:
+    build: .
+    ports:
+      - "${RAILS_API_PORT:-3000}:3000"
+    environment:
+      RAILS_ENV: development
+      DATABASE_HOST: aitally-postgres
+      DATABASE_PORT: 5432
+      DATABASE_USERNAME: ${POSTGRES_USER:-aitally}
+      DATABASE_PASSWORD: ${POSTGRES_PASSWORD:-aitally}
+    volumes:
+      - rails_api_bundle:/usr/local/bundle
+      - .:/app
+    restart: unless-stopped
+    networks:
+      - aitally-net
+
+volumes:
+  rails_api_bundle:
+    name: aitally_rails_api_bundle
+    external: true
+
+networks:
+  aitally-net:
+    external: true

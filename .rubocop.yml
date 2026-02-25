@@ -8,12 +8,15 @@ AllCops:
   NewCops: enable
   ParserEngine: parser_prism
   SuggestExtensions: false
+  Include:
+    - "apps/**/*.rb"
   Exclude:
-    - "vendor/**/*"
-    - "db/migrate/**/*"
-    - "db/schema.rb"
-    - "bin/**/*"
-    - "config/**/*"
+    - "apps/*/vendor/**/*"
+    - "apps/*/db/migrate/**/*"
+    - "apps/*/db/migrations/**/*"
+    - "apps/*/db/schema.rb"
+    - "apps/*/bin/**/*"
+    - "apps/*/config/**/*"
 
 Style/Documentation:
   Enabled: false
@@ -71,12 +74,12 @@ Style/HashSyntax:
 
 Style/GlobalStdStream:
   Exclude:
-    - "config/**/*"
+    - 'apps/*/config/**/*'
 
 Layout/LineLength:
   Max: 150
   Exclude:
-    - "config/**/*"
+    - 'apps/*/config/**/*'
 
 Layout/MultilineMethodCallIndentation:
   EnforcedStyle: indented_relative_to_receiver
@@ -101,12 +104,12 @@ Rails/BulkChangeTable:
 
 Rails/FilePath:
   Exclude:
-    - "spec/requests/**/*"
+    - 'apps/*/spec/requests/**/*'
 
 RSpec/SpecFilePathFormat:
   Enabled: true
   Exclude:
-    - "spec/requests/**/*"
+    - 'apps/*/spec/requests/**/*'
 
 RSpec/ContextWording:
   Enabled: false

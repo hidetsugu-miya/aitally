@@ -2,24 +2,16 @@
 
 D = Steep::Diagnostic
 
-target :app do
-  # rbs-inlineで自動生成されるRBS型定義
+target :lib do
   signature 'sig/generated'
-  # 手動補完用の型定義
   signature 'sig/shim'
 
-  # gemの型定義（rbs_collectionで管理）
   collection_config 'rbs_collection.yaml'
 
-  # 検査対象ファイル
   check 'lib'
 
-  # 診断レベル設定
   configure_code_diagnostics(D::Ruby.default) do |config|
-    # 空配列/ハッシュの型注釈（Steepの既知制限）
     config[D::Ruby::UnannotatedEmptyCollection] = nil
-
-    # Signal.trap等のブロック型推論制限
     config[D::Ruby::BlockTypeMismatch] = nil
   end
 end

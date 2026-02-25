@@ -1,3 +1,12 @@
 /.idea/
 /.env
 /tmp
+/.zed
+
+# Root bundle (for LSP)
+/vendor/bundle/
+/.bundle/
+/.ruby-lsp/
+/.gem_rbs_collection/
+apps/*/.gem_rbs_collection/
+apps/*/sig/generated/

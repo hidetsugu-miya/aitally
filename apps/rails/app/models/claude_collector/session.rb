@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+# rbs_inline: enabled
+
 module ClaudeCollector
   class Session < ClaudeCollectorRecord
     self.table_name = 'sessions'

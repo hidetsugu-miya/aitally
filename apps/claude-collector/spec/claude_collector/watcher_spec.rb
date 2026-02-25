@@ -1,40 +1,40 @@
 # frozen_string_literal: true
 
-RSpec.describe ClaudeCollector::Watcher do
-  subject(:watcher) { described_class.new(path, parser: parser, repository: repository) }
+RSpec.describe(ClaudeCollector::Watcher) do
+  subject(:watcher) { described_class.new(path, parser:, repository:) }
 
   let(:parser) { instance_double(ClaudeCollector::Parser) }
   let(:repository) { instance_double(ClaudeCollector::Repository) }
   let(:path) { '/tmp/claude.json' }
 
   before do
-    allow(parser).to receive(:parse).and_return([])
-    allow(repository).to receive(:save).and_return(0)
+    allow(parser).to(receive(:parse).and_return([]))
+    allow(repository).to(receive(:save).and_return(0))
   end
 
   describe '#start' do
     let(:listener) { instance_double(Listen::Listener, start: nil) }
 
     before do
-      allow(Listen).to receive(:to).and_return(listener)
-      allow($stdout).to receive(:puts)
+      allow(Listen).to(receive(:to).and_return(listener))
+      allow($stdout).to(receive(:puts))
     end
 
-    it 'calls collect on initial start' do
+    it 'calls collect on initial start', :aggregate_failures do
       watcher.start
 
-      expect(parser).to have_received(:parse).with(path)
-      expect(repository).to have_received(:save)
+      expect(parser).to(have_received(:parse).with(path))
+      expect(repository).to(have_received(:save))
     end
 
-    it 'sets up a file listener' do
+    it 'sets up a file listener', :aggregate_failures do
       watcher.start
 
-      expect(Listen).to have_received(:to).with(
-        '/tmp',
-        hash_including(:only, :force_polling)
-      )
-      expect(listener).to have_received(:start)
+      expect(Listen).to(have_received(:to).with(
+                          '/tmp',
+                          hash_including(:only, :force_polling)
+                        ))
+      expect(listener).to(have_received(:start))
     end
   end
 
@@ -42,19 +42,19 @@ RSpec.describe ClaudeCollector::Watcher do
     let(:listener) { instance_double(Listen::Listener, start: nil, stop: nil) }
 
     before do
-      allow(Listen).to receive(:to).and_return(listener)
-      allow($stdout).to receive(:puts)
+      allow(Listen).to(receive(:to).and_return(listener))
+      allow($stdout).to(receive(:puts))
     end
 
     it 'stops the listener' do
       watcher.start
       watcher.stop
 
-      expect(listener).to have_received(:stop)
+      expect(listener).to(have_received(:stop))
     end
 
     it 'handles stop when listener is nil' do
-      expect { watcher.stop }.not_to raise_error
+      expect { watcher.stop }.not_to(raise_error)
     end
   end
 
@@ -62,24 +62,24 @@ RSpec.describe ClaudeCollector::Watcher do
     let(:listener) { instance_double(Listen::Listener, start: nil) }
 
     before do
-      allow(Listen).to receive(:to).and_return(listener)
-      allow($stdout).to receive(:puts)
+      allow(Listen).to(receive(:to).and_return(listener))
+      allow($stdout).to(receive(:puts))
     end
 
     it 'passes parsed sessions to repository.save' do
       sessions = [{ session_id: 'sess-w1', project_path: '/tmp' }]
-      allow(parser).to receive(:parse).and_return(sessions)
-      allow(repository).to receive(:save).and_return(1)
+      allow(parser).to(receive(:parse).and_return(sessions))
+      allow(repository).to(receive(:save).and_return(1))
 
       watcher.start
 
-      expect(repository).to have_received(:save).with(sessions)
+      expect(repository).to(have_received(:save).with(sessions))
     end
 
     it 'rescues and warns on error' do
-      allow(parser).to receive(:parse).and_raise(StandardError.new('test error'))
+      allow(parser).to(receive(:parse).and_raise(StandardError.new('test error')))
 
-      expect { watcher.start }.to output(/test error/).to_stderr
+      expect { watcher.start }.to(output(/test error/).to_stderr)
     end
   end
 
@@ -88,21 +88,21 @@ RSpec.describe ClaudeCollector::Watcher do
     let(:captured_callback) { [] }
 
     before do
-      allow(Listen).to receive(:to) do |_dir, **_opts, &block|
+      allow(Listen).to(receive(:to)) do |_dir, **_opts, &block|
         captured_callback[0] = block
         listener
       end
-      allow($stdout).to receive(:puts)
+      allow($stdout).to(receive(:puts))
     end
 
     it 'triggers collect when the watched file is modified' do
       watcher.start
-      allow(parser).to receive(:parse).and_return([])
-      allow(repository).to receive(:save).and_return(0)
+      allow(parser).to(receive(:parse).and_return([]))
+      allow(repository).to(receive(:save).and_return(0))
 
       captured_callback[0].call(['/tmp/claude.json'], [], [])
 
-      expect(parser).to have_received(:parse).with(path).twice
+      expect(parser).to(have_received(:parse).with(path).twice)
     end
 
     it 'does not trigger collect when a different file changes' do
@@ -110,7 +110,7 @@ RSpec.describe ClaudeCollector::Watcher do
 
       captured_callback[0].call(['/tmp/other.json'], [], [])
 
-      expect(parser).to have_received(:parse).with(path).once
+      expect(parser).to(have_received(:parse).with(path).once)
     end
   end
 
@@ -118,26 +118,26 @@ RSpec.describe ClaudeCollector::Watcher do
     let(:listener) { instance_double(Listen::Listener, start: nil) }
 
     before do
-      allow(Listen).to receive(:to).and_return(listener)
-      allow($stdout).to receive(:puts)
+      allow(Listen).to(receive(:to).and_return(listener))
+      allow($stdout).to(receive(:puts))
     end
 
     it "returns true when LISTEN_POLLING is 'true'" do
-      allow(ENV).to receive(:[]).and_call_original
-      allow(ENV).to receive(:[]).with('LISTEN_POLLING').and_return('true')
+      allow(ENV).to(receive(:[]).and_call_original)
+      allow(ENV).to(receive(:[]).with('LISTEN_POLLING').and_return('true'))
 
       watcher.start
 
-      expect(Listen).to have_received(:to).with(anything, hash_including(force_polling: true))
+      expect(Listen).to(have_received(:to).with(anything, hash_including(force_polling: true)))
     end
 
     it 'returns false when LISTEN_POLLING is not set' do
-      allow(ENV).to receive(:[]).and_call_original
-      allow(ENV).to receive(:[]).with('LISTEN_POLLING').and_return(nil)
+      allow(ENV).to(receive(:[]).and_call_original)
+      allow(ENV).to(receive(:[]).with('LISTEN_POLLING').and_return(nil))
 
       watcher.start
 
-      expect(Listen).to have_received(:to).with(anything, hash_including(force_polling: false))
+      expect(Listen).to(have_received(:to).with(anything, hash_including(force_polling: false)))
     end
   end
 end

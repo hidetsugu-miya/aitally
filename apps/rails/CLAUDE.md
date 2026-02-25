@@ -1,86 +1,97 @@
 # rails-api
 
+Dockerコンテナ上で動作する。すべてのコマンド（rubocop, steep, rbs-inline, brakeman等）はDocker経由で実行すること。
+
 ## コマンド
 
-### RuboCop（静的解析）
+### Make（推奨）
 
 ```bash
-# 全ファイルチェック
-docker compose exec rails-api bundle exec rubocop
+# appディレクトリから
+cd apps/rails
+make ci          # rubocop + brakeman + steep
+make brakeman    # セキュリティスキャン
+make up          # コンテナ起動
+make down        # コンテナ停止
 
-# 自動修正
-docker compose exec rails-api bundle exec rubocop -A
-
-# 特定ファイルのみ
-docker compose exec rails-api bundle exec rubocop <container_path>
+# ルートから
+make rubocop.rails
+make brakeman
+make steep.rails
 ```
 
-`<container_path>` はコンテナ内パス（例: `/app/app/models/claude_collector/session.rb`）。
-
-### Brakeman（セキュリティスキャン）
+### RuboCop（静的解析）- Docker実行
 
 ```bash
-# 全ファイルチェック
-docker compose exec rails-api bundle exec brakeman --no-pager
+# appディレクトリから
+cd apps/rails
+make rubocop
+
+# 直接実行
+docker compose run --rm app bundle exec rubocop
 ```
 
-### RSpec（テスト）
+### Brakeman（セキュリティスキャン）- Docker実行
 
 ```bash
-# 全テスト実行
-docker compose exec rails-api bundle exec rspec
+# appディレクトリから
+cd apps/rails
+make brakeman
 
-# 特定ファイルのみ
-docker compose exec rails-api bundle exec rspec <container_path>
+# 直接実行
+docker compose run --rm app bundle exec brakeman --no-pager
 ```
 
-### rbs-inline（RBS型定義生成）
+### RBS Collection（型定義インストール）- Docker実行
 
 ```bash
-# app/ からRBS生成
-docker compose exec rails-api bundle exec rbs-inline --output app/
+# ルートから実行（全app一括）
+make rbs-collection
 
-# lib/ からRBS生成
-docker compose exec rails-api bundle exec rbs-inline --output lib/
+# appディレクトリから
+cd apps/rails
+make rbs-collection
+```
 
-# 特定ファイルのみ
-docker compose exec rails-api bundle exec rbs-inline --output <container_path>
+### rbs-inline（RBS型定義生成）- Docker実行
+
+```bash
+# ルートから実行（全app一括）
+make rbs-inline
+
+# appディレクトリから
+cd apps/rails
+make rbs-inline
 ```
 
 生成されたRBSファイルは `sig/generated/` に出力される。
 
-### Steep（型チェック）
+### Steep（型チェック）- Docker実行
 
 ```bash
-# 全ファイルチェック
-docker compose exec rails-api bundle exec steep check
+# ルートから実行（全app一括）
+make steep
 
-# 特定ファイルのみ
-docker compose exec rails-api bundle exec steep check <container_path>
-
-# 並列実行
-docker compose exec rails-api bundle exec steep check --jobs 4
+# appディレクトリから
+cd apps/rails
+make steep
 ```
 
-### RBS Collection（gem型定義管理）
+### Rails Console - Docker実行
 
 ```bash
-# gem型定義のインストール・更新
-docker compose exec rails-api bundle exec rbs collection install
+cd apps/rails
+docker compose exec app bin/rails console
 ```
 
-### Rails Console
+### DB マイグレーション - Docker実行
 
 ```bash
-docker compose exec rails-api bin/rails console
-```
+cd apps/rails
 
-### DB マイグレーション
-
-```bash
 # マイグレーション実行
-docker compose exec rails-api bin/rails db:migrate
+docker compose exec app bin/rails db:migrate
 
 # DB作成
-docker compose exec rails-api bin/rails db:create
+docker compose exec app bin/rails db:create
 ```

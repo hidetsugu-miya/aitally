@@ -2,9 +2,9 @@
 
 module ClaudeCollector
   class Parser
-    MAX_RETRIES: ::Integer
+    MAX_RETRIES: Integer
 
-    RETRY_DELAY: ::Float
+    RETRY_DELAY: Float
 
     # @rbs path: String
     # @rbs return: Array[Hash[Symbol, Object]]

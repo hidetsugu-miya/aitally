@@ -1,12 +1,29 @@
-.PHONY: ci rubocop brakeman rspec
+COMPOSE := docker compose
 
-ci: rubocop brakeman rspec
+.PHONY: ci rubocop rubocop.auto_correct steep rbs-collection rbs-inline brakeman up down
+
+ci: rubocop brakeman steep
 
 rubocop:
-	docker compose exec rails-api bundle exec rubocop
+	$(COMPOSE) run --rm app bundle exec rubocop
+
+rubocop.auto_correct:
+	$(COMPOSE) run --rm app bundle exec rubocop -A
+
+steep:
+	$(COMPOSE) run --rm app bundle exec steep check
+
+rbs-collection:
+	$(COMPOSE) run --rm app bundle exec rbs collection install
+
+rbs-inline:
+	$(COMPOSE) run --rm app bundle exec rbs-inline --output app/ lib/
 
 brakeman:
-	docker compose exec rails-api bundle exec brakeman --no-pager
+	$(COMPOSE) run --rm app bundle exec brakeman --no-pager
 
-rspec:
-	docker compose exec rails-api bundle exec rspec
+up:
+	$(COMPOSE) up -d
+
+down:
+	$(COMPOSE) down
