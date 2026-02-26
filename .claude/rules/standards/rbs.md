@@ -5,6 +5,7 @@ paths: sig/**/*.rbs, Steepfile, rbs_collection.yaml, lib/**/*.rb
 # RBS型定義規約
 
 - AIが新規作成・修正したファイルは **Typed 100%** を目指す
+- 全 Ruby ファイルに `# rbs_inline: enabled` を記載する
 
 ## rbs-inline 記法
 
@@ -87,6 +88,33 @@ COLUMN_MAPPING = { #: Hash[Symbol, Symbol]
   name: :string
 }.freeze
 ```
+
+## Steep 設定
+
+### ディレクトリ構成
+
+```text
+sig/
+  generated/    # rbs-inline が自動生成する型定義（手動編集禁止）
+  shim/         # 外部ライブラリの型定義補完（手動作成）
+```
+
+- `sig/generated/`: `make rbs-inline` で自動生成される。直接編集しない
+- `sig/shim/`: 外部ライブラリのRBS定義が不足している場合にのみ使用する
+
+### 実行方法
+
+```bash
+# rbs-inline 実行（RBS型定義生成）
+cd apps/rails
+make rbs-inline
+
+# Steep 型チェック実行
+cd apps/rails
+make steep
+```
+
+全てDocker経由で実行すること。
 
 ## shim
 

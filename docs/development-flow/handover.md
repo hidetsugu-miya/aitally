@@ -1,9 +1,10 @@
 ---
-phase: tasks
-phase_status: completed
+phase: implementation
+phase_status: in_progress
+task-status: implementing
 tasks:
-- {id: 1, status: planning}
-- {id: 2, status: pending}
+- {id: 1, status: done}
+- {id: 2, status: planning}
 - {id: 3, status: pending}
 - {id: 4, status: pending}
 - {id: 5, status: pending}
@@ -55,4 +56,4 @@ tasks:
 
 ## 次の作業
 
-実装フェーズでタスク1から実装開始（`/development-flow`）
+タスク2から実装を継続（`/development-flow`）
