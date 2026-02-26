@@ -7,7 +7,7 @@ D = Steep::Diagnostic
 
 target :claude_collector do
   signature 'apps/claude-collector/sig/generated'
-  signature 'apps/claude-collector/sig/shim'
+  signature 'sig/shared'
   collection_config 'apps/claude-collector/rbs_collection.yaml'
 
   check 'apps/claude-collector/lib'
@@ -20,7 +20,7 @@ end
 
 target :rails_app do
   signature 'apps/rails/sig/generated'
-  signature 'apps/rails/sig/shim'
+  signature 'sig/shared'
   collection_config 'apps/rails/rbs_collection.yaml'
 
   check 'apps/rails/app'

@@ -4,7 +4,7 @@ D = Steep::Diagnostic
 
 target :lib do
   signature 'sig/generated'
-  signature 'sig/shim'
+  signature 'sig/shared'
 
   collection_config 'rbs_collection.yaml'
 

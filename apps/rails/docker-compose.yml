@@ -12,6 +12,7 @@ services:
     volumes:
       - rails_api_bundle:/usr/local/bundle
       - .:/app
+      - ../../sig/shared:/app/sig/shared:ro
     restart: unless-stopped
     networks:
       - aitally-net

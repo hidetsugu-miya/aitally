@@ -1,5 +1,0 @@
-module ActiveRecord
-  class Base
-    def self.connection_handler: () -> untyped
-  end
-end

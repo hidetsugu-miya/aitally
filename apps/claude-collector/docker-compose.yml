@@ -9,6 +9,7 @@ services:
       - ~/.claude.json:/data/claude.json:ro
       - claude_collector_bundle:/usr/local/bundle
       - .:/app
+      - ../../sig/shared:/app/sig/shared:ro
     restart: unless-stopped
     networks:
       - aitally-net

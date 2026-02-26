@@ -9,7 +9,7 @@ paths: sig/**/*.rbs, Steepfile, rbs_collection.yaml, lib/**/*.rb
 
 ## rbs-inline 記法
 
-**rbs-inline 形式を必ず使用する。** shim（`sig/shim/`）は外部ライブラリの型定義補完にのみ使用し、自作コードには一切使用しない。
+**rbs-inline 形式を必ず使用する。** shim（`sig/shared/`）は外部ライブラリの型定義補完にのみ使用し、自作コードには一切使用しない。
 
 ### メソッド（引数・戻り値）
 
@@ -96,11 +96,11 @@ COLUMN_MAPPING = { #: Hash[Symbol, Symbol]
 ```text
 sig/
   generated/    # rbs-inline が自動生成する型定義（手動編集禁止）
-  shim/         # 外部ライブラリの型定義補完（手動作成）
+  shared/       # 外部ライブラリの型定義補完（手動作成、モノレポ共通）
 ```
 
 - `sig/generated/`: `make rbs-inline` で自動生成される。直接編集しない
-- `sig/shim/`: 外部ライブラリのRBS定義が不足している場合にのみ使用する
+- `sig/shared/`: 外部ライブラリのRBS定義が不足している場合にのみ使用する。モノレポルートの `sig/shared/` に配置し、各アプリから共有する
 
 ### 実行方法
 
@@ -116,12 +116,12 @@ make steep
 
 全てDocker経由で実行すること。
 
-## shim
+## shim（sig/shared/）
 
-外部ライブラリの型定義が不足している場合にのみ `sig/shim/` を使用する。
+外部ライブラリの型定義が不足している場合にのみ `sig/shared/` を使用する。モノレポルートの `sig/shared/` に配置し、各アプリの Steepfile および docker-compose.yml で参照する。
 
 ```rbs
-# sig/shim/rollbar.rbs
+# sig/shared/rollbar.rbs
 module Rollbar
   def self.error: (untyped exception, ?untyped? extra) -> void
 end
