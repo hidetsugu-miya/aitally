@@ -3,7 +3,7 @@
        ci rubocop rubocop.claude-collector rubocop.rails \
        rubocop.auto_correct rubocop.auto_correct.claude-collector rubocop.auto_correct.rails \
        rbs-collection rbs-inline steep steep.claude-collector steep.rails \
-       rspec rspec.claude-collector brakeman
+       rspec rspec.claude-collector rspec.rails brakeman
 
 # ============================================================
 # Lifecycle
@@ -83,10 +83,13 @@ steep.rails:
 # RSpec（app委譲）
 # ============================================================
 
-rspec: rspec.claude-collector
+rspec: rspec.claude-collector rspec.rails
 
 rspec.claude-collector:
 	@make -C apps/claude-collector rspec
+
+rspec.rails:
+	@make -C apps/rails rspec
 
 # ============================================================
 # Brakeman（app委譲）

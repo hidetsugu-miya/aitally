@@ -4,7 +4,7 @@ phase_status: in_progress
 task-status: implementing
 tasks:
 - {id: 1, status: done}
-- {id: 2, status: planning}
+- {id: 2, status: done}
 - {id: 3, status: pending}
 - {id: 4, status: pending}
 - {id: 5, status: pending}
@@ -56,4 +56,19 @@ tasks:
 
 ## 次の作業
 
-タスク2から実装を継続（`/development-flow`）
+タスク3から実装を継続（`/development-flow`）
+
+残タスク一覧:
+- タスク3: SimpleCovSetup
+- タスク4: RswagSetup
+- タスク5: AlbaSetup
+- タスク6: KaminariSetup
+- タスク7: SessionsAPI
+- タスク8: SessionDetailAPI
+- タスク9: ModelUsagesAPI
+- タスク10: BaseController
+- タスク11: PaginationMeta
+- タスク12: SessionResource
+- タスク13: SessionDetailResource
+- タスク14: ModelUsageResource
+- タスク15: SwaggerDoc

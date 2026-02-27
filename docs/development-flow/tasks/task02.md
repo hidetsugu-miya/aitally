@@ -52,3 +52,19 @@ apps/rails に rspec-rails を導入し、テスト実行環境を整備する�
 - `spec/` ディレクトリ構成が整備されていること
 - `config/application.rb` の変更が完了していること
 - `Gemfile` に rspec-rails が追加されていること
+
+## 実行履歴
+
+### 実行1
+
+#### implementer
+- ステータス: 完了
+- 概要: rspec-rails/simplecov導入、spec_helper.rb/rails_helper.rb作成、test/削除、Makefile更新、モデルテスト3ファイル作成（SimpleCovフィルタ追加含む）
+
+#### CI
+- 結果: PASS
+- 実行方法: make ci
+
+#### MustFix修正
+- 修正対象: MF-1（readonly!未実装）、MF-2（readonly!テスト欠落）、MF-3（describe命名不整合）、MF-4（部分一致検証）
+- CI再検証: PASS
